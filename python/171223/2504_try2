@@ -1,0 +1,59 @@
+from sys import stdin, stdout
+# Commnet
+# 많이 틀렸던 이유
+# 1) stack에서 숫자들이 쌓이면 더해진다는 것을 생각하지 못함
+# 2) stack을 정확히 이해하지 않고 reversed함수를 쓰다보니 reversed에 맞는 코딩을 못함
+# reversed할 필요 없이 pop()만 해주면 되는 문제였음
+read = lambda: stdin.readline().rstrip()
+element = list(read())
+# element = ['(', '(', ')', '[', '[', ']', ']', ')', '(', '[', ']', ')']
+# print(element)
+
+def calculator(element):
+    stack1 = []
+    top = element[0]
+    for i in element:
+        if i == '(' or i == '[':
+            stack1.append(i)
+            top = stack1[-1]
+        elif i == ')' and top == '(':
+            stack1.pop()
+            stack1.append(2)
+            top = stack1[-1]
+        elif i == ']' and top == '[':
+            stack1.pop()
+            stack1.append(3)
+            top = stack1[-1]
+        elif i == ')' and type(top) == int:
+            temp = 0
+            for i in reversed(stack1):
+                if i == '(':
+                    temp *= 2
+                    stack1.pop()
+                    stack1.append(temp)
+                    top = stack1[-1]
+                    break
+                elif type(i) == int:
+                    temp += i
+                    stack1.pop()
+        elif i == ']' and type(top) == int:
+            temp = 0
+            for i in reversed(stack1):
+                if i == '[':
+                    temp *= 3
+                    stack1.pop()
+                    stack1.append(temp)
+                    top = stack1[-1]
+                    break
+                elif type(i) == int:
+                    temp += i
+                    stack1.pop()
+        else:
+            print(0)
+            return
+    for i in stack1:
+        if i == '(' or i == ')' or i == '[' or i == ']':
+            print(0)
+            return
+    print(sum(stack1))
+calculator(element)
