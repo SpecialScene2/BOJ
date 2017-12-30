@@ -23,6 +23,8 @@ for j in range(N):
 # print(solutionMap)
 
 def findWay(row,col):
+    # dr = [-1, 0, 1, 0]
+    # dc = [0, 1, 0, -1]
     global solutionMap
     value = Map[row][col]
     solution = 0

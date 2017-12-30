@@ -1,0 +1,238 @@
+from sys import stdin, exit
+
+read = lambda: stdin.readline().rstrip()
+N = int(read())
+
+Map = []
+for i in range(N):
+    temp = []
+    for j in range(N):
+        temp.append(0)
+    Map.append(temp)
+print(Map)
+
+appleNum = int(read())
+
+appleLocate = []
+for k in range(appleNum):
+    temp = list(map(int,read().split()))
+    Map[temp[0]-1][temp[1]-1] = 1
+    appleLocate.append(temp)
+print(appleLocate)
+
+#왼쪽 L, 오른쪽 D
+directionLoop = int(read())
+
+order2 = []
+for z in range(directionLoop):
+    temp = list(read().split())
+    temp[0] = int(temp[0])
+    order2.append(temp)
+# print(order2)
+
+container = []
+for g in order2:
+    container.append(g[0])
+# print(container)
+
+container2 = [container[0]]
+for u in range(1,len(container)):
+    container2.append(container[u]-container[u-1])
+# print(container2)
+
+order =[]
+for n in range(len(order2)):
+    order.append([container2[n],order2[n][1]])
+print(order)
+
+snakeHead = [0,0]
+snakeBody = []
+# Direction = ['E','W','S','N']
+# snake = [Direction[0], snakeHead, []]
+snake = [snakeHead, snakeBody]
+seconds = 0
+# head = snake[1]
+# body = snake[2]
+current = 'E'
+count = 0
+
+# 방향과 snake(위치정보) 정보를 인풋으로 한다.
+def goSnake(currentDirection, snakeInf, order):
+    global count, Map, snake, current
+    print(currentDirection, snakeInf, order)
+    Head = snakeInf[0]
+    Body = snakeInf[1]
+    if currentDirection == 'E':
+        for i in range(1, order[0] + 1): # i가 의미하는 것은 i번째 움직임을 뜻 한다.
+            count += 1
+            # print(count)
+            newHead = [Head[0], Head[1]+1]
+            print(newHead, Body)
+            if 0 <=newHead[0] <=N-1 and 0 <= newHead[1] <= N-1: # Map 내에 위치한 경우
+                if newHead in Body: #자신 몸에 박은 경우
+                    return count
+                elif Map[newHead[0]][newHead[1]] == 1: #Head 이동할 곳에 사과가 있다면,
+                    # appleLocate.remove([[newHead[0]], [newHead[1]]]) # apple
+                    Map[newHead[0]][newHead[1]] = 0 # 사과 없어졌으니 아무것도 없다는 뜻의 0을 마킹
+                    if not Body:
+                        Body.append(Head)
+                    elif Body:
+                        forAppend = Body[-1]
+                        if i -1 < len(Body) and i != 1: # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i-1):
+                                Body[j][1] += 1
+                            Body.append(forAppend)
+                        elif i -1 > len(Body) : # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][1] += 1
+                            Body.append(forAppend)
+                elif Map[newHead[0]][newHead[1]] == 0:  # Head 이동할 곳에 사과가 없다면
+                    if Body:
+                        if i - 1 < len(Body) and i != 1:  # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i - 1):
+                                Body[j][1] += 1
+                        elif i - 1 > len(Body):  # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][1] += 1
+            else: # Map 밖을 벗어난 경우
+                return count
+            if order[1] == 'D':
+                current = 'S'
+            else:
+                current = 'N'
+            Head = newHead
+            snake = [Head, Body]
+
+    elif currentDirection == 'W':
+        for i in range(1, order[0] + 1): # i가 의미하는 것은 i번째 움직임을 뜻 한다.
+            count += 1
+            # print(count)
+            newHead = [Head[0], Head[1]-1]
+            print(newHead, Body)
+            if 0 <=newHead[0] <=N-1 and 0 <= newHead[1] <= N-1: # Map 내에 위치한 경우
+                if newHead in Body: #자신 몸에 박은 경우
+                    return count
+                elif Map[newHead[0]][newHead[1]] == 1: #Head 이동할 곳에 사과가 있다면,
+                    # appleLocate.remove([[newHead[0]], [newHead[1]]]) # apple
+                    Map[newHead[0]][newHead[1]] = 0 # 사과 없어졌으니 아무것도 없다는 뜻의 0을 마킹
+                    if not Body:
+                        Body.append(Head)
+                    elif Body:
+                        forAppend = Body[-1]
+                        if i -1 < len(Body) and i != 1: # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i-1):
+                                Body[j][1] -= 1
+                            Body.append(forAppend)
+                        elif i -1 > len(Body) : # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][1] -= 1
+                            Body.append(forAppend)
+                elif Map[newHead[0]][newHead[1]] == 0:  # Head 이동할 곳에 사과가 없다면
+                    if Body:
+                        print(i,'Body')
+                        if i - 1 < len(Body):  # 꺾일거 보다 뱀의 몸통이 길때
+                            print('body2')
+                            for j in range(i - 1):
+                                Body[j][0] -= 1
+                        elif i - 1 > len(Body):  # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][1] -= 1
+            else: # Map 밖을 벗어난 경우
+                return count
+            if order[1] == 'D':
+                current = 'N'
+            else:
+                current = 'S'
+            Head = newHead
+            snake = [Head, Body]
+
+    elif currentDirection == 'N':
+        for i in range(1, order[0] + 1): # i가 의미하는 것은 i번째 움직임을 뜻 한다.
+            count += 1
+            # print(count)
+            newHead = [Head[0] - 1, Head[1]]
+            print(newHead, Body)
+            if 0 <=newHead[0] <=N-1 and 0 <= newHead[1] <= N-1: # Map 내에 위치한 경우
+                if newHead in Body: #자신 몸에 박은 경우
+                    return count
+                elif Map[newHead[0]][newHead[1]] == 1: #Head 이동할 곳에 사과가 있다면,
+                    # appleLocate.remove([[newHead[0]], [newHead[1]]]) # apple
+                    Map[newHead[0]][newHead[1]] = 0 # 사과 없어졌으니 아무것도 없다는 뜻의 0을 마킹
+                    if not Body:
+                        Body.append(Head)
+                    elif Body:
+                        forAppend = Body[-1]
+                        if i -1 < len(Body) and i != 1: # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i-1):
+                                Body[j][0] -= 1
+                            Body.append(forAppend)
+                        elif i -1 > len(Body) : # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][0] -= 1
+                            Body.append(forAppend)
+                elif Map[newHead[0]][newHead[1]] == 0:  # Head 이동할 곳에 사과가 없다면
+                    if Body:
+                        if i - 1 < len(Body) and i != 1:  # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i - 1):
+                                Body[j][0] -= 1
+                        elif i - 1 > len(Body):  # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][0] -= 1
+            else: # Map 밖을 벗어난 경우
+                return count
+            if order[1] == 'D':
+                current = 'E'
+            else:
+                current = 'W'
+            Head = newHead
+            snake = [Head, Body]
+
+    if currentDirection == 'S':
+        for i in range(1, order[0] + 1): # i가 의미하는 것은 i번째 움직임을 뜻 한다.
+            count += 1
+            # print(count)
+            newHead = [Head[0] + 1, Head[1]]
+            print(newHead, Body)
+            if 0 <=newHead[0] <=N-1 and 0 <= newHead[1] <= N-1: # Map 내에 위치한 경우
+                if newHead in Body: #자신 몸에 박은 경우
+                    return count
+                elif Map[newHead[0]][newHead[1]] == 1: #Head 이동할 곳에 사과가 있다면,
+                    # appleLocate.remove([[newHead[0]], [newHead[1]]]) # apple
+                    Map[newHead[0]][newHead[1]] = 0 # 사과 없어졌으니 아무것도 없다는 뜻의 0을 마킹
+                    if not Body:
+                        Body.append(Head)
+                    elif Body:
+                        forAppend = Body[-1]
+                        if i -1 < len(Body) and i != 1: # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i-1):
+                                Body[j][0] += 1
+                            Body.append(forAppend)
+                        elif i -1 > len(Body) : # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][0] += 1
+                            Body.append(forAppend)
+                elif Map[newHead[0]][newHead[1]] == 0:  # Head 이동할 곳에 사과가 없다면
+                    if Body:
+                        if i - 1 < len(Body) and i != 1:  # 꺾일거 보다 뱀의 몸통이 길때
+                            for j in range(i - 1):
+                                Body[j][0] += 1
+                        elif i - 1 > len(Body):  # 다 꺾이고 뱀의 몸통 전체에 변화량 더해주면 됨
+                            for j in range(len(Body)):
+                                Body[j][0] += 1
+            else: # Map 밖을 벗어난 경우
+                return count
+            if order[1] == 'D':
+                current = 'W'
+            else:
+                current = 'E'
+            Head = newHead
+            snake = [Head, Body]
+
+for i in range(directionLoop):
+    a = goSnake(current, snake, order[i])
+    if a:
+        print(a)
+        exit()
+    else:
+        print('%d번째 까지는 정상' %i)
+        continue
